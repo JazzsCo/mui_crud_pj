@@ -1,5 +1,6 @@
 "use client";
 
+import { useModal } from "@/hooks/use-modal";
 import {
   Box,
   Button,
@@ -17,6 +18,8 @@ import {
 import Image from "next/image";
 
 const Heading = () => {
+  const { onOpen } = useModal();
+
   return (
     <Box
       sx={{
@@ -121,6 +124,7 @@ const Heading = () => {
                   border: "none",
                 },
               }}
+              onClick={onOpen}
             >
               <Stack direction="row" alignItems="center">
                 <IconButton disableRipple>
