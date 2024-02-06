@@ -21,7 +21,7 @@ const Heading = () => {
     <Box
       sx={{
         px: 4,
-        py: 5,
+        py: 3,
       }}
     >
       <Typography
