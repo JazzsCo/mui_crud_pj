@@ -3,11 +3,6 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -255,13 +250,13 @@ const StoreModal = () => {
                   name="gender"
                   render={({ field }) => (
                     <>
-                      <InputLabel error={!!errors.phone}>Gender</InputLabel>
+                      <InputLabel error={!!errors.gender}>Gender</InputLabel>
                       <TextField
                         fullWidth
                         type="text"
                         variant="outlined"
-                        error={!!errors.phone}
-                        helperText={errors.phone?.message}
+                        error={!!errors.gender}
+                        helperText={errors.gender?.message}
                         {...field}
                         sx={{
                           ".MuiInputBase-input": {
@@ -291,35 +286,27 @@ const StoreModal = () => {
                       <InputLabel error={!!errors.birthday}>
                         Date of Birth
                       </InputLabel>
-                      {/* <TextField
+                      <TextField
                         fullWidth
-                        type="text"
+                        type="date"
                         variant="outlined"
                         error={!!errors.birthday}
                         helperText={errors.birthday?.message}
                         {...field}
                         sx={{
-                          
+                          ".MuiInputBase-input": {
+                            paddingY: "4px",
+                            borderColor: "yellow",
+                          },
                           ".MuiFormHelperText-root": {
                             fontSize: "11px",
                             ml: "7px",
                           },
-                          
+                          ".MuiOutlinedInput-notchedOutline": {
+                            borderColor: "mainColor.main",
+                          },
                         }}
-                      />  */}
-
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          sx={{
-                            ".MuiInputBase-input": {
-                              paddingY: "4px",
-                            },
-                            ".MuiOutlinedInput-notchedOutline": {
-                              borderColor: "mainColor.main",
-                            },
-                          }}
-                        />
-                      </LocalizationProvider>
+                      />
                     </>
                   )}
                 />
