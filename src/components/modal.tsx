@@ -26,33 +26,68 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 
+const STATUS = [
+  {
+    name: "Food Allergy",
+    imgUrl: "/resources/allergy.png",
+  },
+  {
+    name: "Picky Eater",
+    imgUrl: "/resources/picky_eater.png",
+  },
+];
+
+const BREED = [
+  {
+    name: "Beagle",
+  },
+  {
+    name: "Spaniel",
+  },
+  {
+    name: "Golden Retriever",
+  },
+];
+
+const CITY = [
+  {
+    name: "Yangon",
+  },
+];
+
+const TOWNSHIP = [
+  {
+    name: "Hlaing",
+  },
+  {
+    name: "Sanchaung",
+  },
+  {
+    name: "Mayangone",
+  },
+  {
+    name: "Kamayut",
+  },
+];
+
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name has to be at least 3 characters." }),
   pawrent: z
     .string()
     .min(3, { message: "Pawrent has to be at least 3 characters." }),
-  status: z
-    .string()
-    .min(3, { message: "Status has to be at least 3 characters." }),
-  breed: z
-    .string()
-    .min(3, { message: "Breed has to be at least 3 characters." }),
-  address: z
-    .string()
-    .min(3, { message: "Address has to be at least 3 characters." }),
-  city: z.string().min(3, { message: "City has to be at least 3 characters." }),
-  township: z
-    .string()
-    .min(3, { message: "Township has to be at least 3 characters." }),
+  status: z.string().nonempty({ message: "You need to select status." }),
+  breed: z.string().nonempty({ message: "You need to select breed." }),
+  address: z.string().nonempty({ message: "You need to select address." }),
+  city: z.string().nonempty({ message: "You need to select city." }),
+  township: z.string().nonempty({ message: "You need to select township." }),
   phone: z
-    .number()
-    .min(11, { message: "Phone has to be at least 11 numbers." }),
-  birthday: z.string().transform((value) => new Date(value)),
-  gender: z.string({
-    errorMap: () => {
-      return { message: "You need to select a gender" };
-    },
-  }),
+    .string()
+    .min(11, { message: "Phone number has to be at least 11 numbers." })
+    .max(11, { message: "Phone number has to be at most 11 numbers." }),
+  birthday: z
+    .string()
+    .nonempty({ message: "Yon need to select a valid date." }),
+  gender: z.enum(["male", "female"]),
 });
 
 const StoreModal = () => {
@@ -61,6 +96,7 @@ const StoreModal = () => {
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors, isLoading },
   } = useForm<z.infer<typeof formSchema>>({
     mode: "all",
@@ -73,9 +109,9 @@ const StoreModal = () => {
       address: "",
       city: "",
       township: "",
-      phone: undefined,
-      birthday: undefined,
-      gender: undefined,
+      phone: "",
+      birthday: "",
+      gender: "male",
     },
   });
 
@@ -83,14 +119,14 @@ const StoreModal = () => {
     console.log("VALUES", values);
   };
 
+  const closeAndReset = () => {
+    reset();
+    onClose();
+  };
+
   return (
     <div>
-      <Modal
-        open={isOpen}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={isOpen} onClose={closeAndReset}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box
             sx={{
@@ -113,7 +149,7 @@ const StoreModal = () => {
                 right: 15,
               }}
             >
-              <IconButton onClick={onClose}>
+              <IconButton onClick={closeAndReset}>
                 <CloseIcon color="warning" />
               </IconButton>
             </Box>
@@ -185,7 +221,6 @@ const StoreModal = () => {
                         fullWidth
                         variant="outlined"
                         error={!!errors.status}
-                        {...field}
                         sx={{
                           ".MuiInputBase-input": {
                             paddingY: "4px",
@@ -199,12 +234,12 @@ const StoreModal = () => {
                           },
                         }}
                       >
-                        <Select
-                          placeholder="please choose status"
-                          value={""}
-                          onChange={() => {}}
-                        >
-                          <MenuItem value={10}>Status All</MenuItem>
+                        <Select {...field} placeholder="please choose status">
+                          {STATUS.map((item) => (
+                            <MenuItem key={item.name} value={item.name}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
                         </Select>
                         <FormHelperText>
                           {errors.status?.message}
@@ -258,7 +293,6 @@ const StoreModal = () => {
                         fullWidth
                         variant="outlined"
                         error={!!errors.breed}
-                        {...field}
                         sx={{
                           ".MuiInputBase-input": {
                             paddingY: "4px",
@@ -272,12 +306,12 @@ const StoreModal = () => {
                           },
                         }}
                       >
-                        <Select
-                          placeholder="please choose breed"
-                          value={""}
-                          onChange={() => {}}
-                        >
-                          <MenuItem value={10}>Status All</MenuItem>
+                        <Select {...field} placeholder="please choose breed">
+                          {BREED.map((item) => (
+                            <MenuItem key={item.name} value={item.name}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
                         </Select>
                         <FormHelperText>{errors.breed?.message}</FormHelperText>
                       </FormControl>
@@ -297,7 +331,7 @@ const StoreModal = () => {
                       }}
                     >
                       <FormLabel>Gender</FormLabel>
-                      <RadioGroup defaultValue="male">
+                      <RadioGroup {...field}>
                         <Stack
                           flexDirection="row"
                           alignItems="center"
@@ -430,7 +464,6 @@ const StoreModal = () => {
                         fullWidth
                         variant="outlined"
                         error={!!errors.city}
-                        {...field}
                         sx={{
                           ".MuiInputBase-input": {
                             paddingY: "4px",
@@ -444,12 +477,12 @@ const StoreModal = () => {
                           },
                         }}
                       >
-                        <Select
-                          placeholder="please choose city"
-                          value={""}
-                          onChange={() => {}}
-                        >
-                          <MenuItem value={10}>Status All</MenuItem>
+                        <Select {...field} placeholder="please choose city">
+                          {CITY.map((item) => (
+                            <MenuItem key={item.name} value={item.name}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
                         </Select>
                         <FormHelperText>{errors.city?.message}</FormHelperText>
                       </FormControl>
@@ -471,7 +504,6 @@ const StoreModal = () => {
                         fullWidth
                         variant="outlined"
                         error={!!errors.township}
-                        {...field}
                         sx={{
                           ".MuiInputBase-input": {
                             paddingY: "4px",
@@ -485,12 +517,12 @@ const StoreModal = () => {
                           },
                         }}
                       >
-                        <Select
-                          placeholder="please choose township"
-                          value={""}
-                          onChange={() => {}}
-                        >
-                          <MenuItem value={10}>Status All</MenuItem>
+                        <Select {...field} placeholder="please choose township">
+                          {TOWNSHIP.map((item) => (
+                            <MenuItem key={item.name} value={item.name}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
                         </Select>
                         <FormHelperText>
                           {errors.township?.message}
@@ -528,7 +560,7 @@ const StoreModal = () => {
                 size="small"
                 variant="outlined"
                 color="warning"
-                onClick={onClose}
+                onClick={closeAndReset}
                 sx={{
                   width: "120px",
                   textTransform: "none",
