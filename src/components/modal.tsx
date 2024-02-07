@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import CloseIcon from "@mui/icons-material/Close";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -13,11 +14,14 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
+  Stack,
   TextField,
 } from "@mui/material";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name has to be at least 3 characters." }),
@@ -95,11 +99,46 @@ const StoreModal = () => {
               border: "1px",
               borderRadius: 1,
               boxShadow: 24,
-              width: "550px",
+              width: "580px",
               p: 4,
             }}
           >
-            <Grid container spacing={2} flexDirection="row">
+            <Box
+              sx={{
+                position: "absolute",
+                top: 10,
+                right: 15,
+              }}
+            >
+              <IconButton onClick={onClose}>
+                <CloseIcon color="warning" />
+              </IconButton>
+            </Box>
+
+            <Stack
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              mb={3}
+            >
+              <Typography
+                variant="subtitle1"
+                color="mainColor.main"
+                letterSpacing={1}
+              >
+                Add new patient
+              </Typography>
+              <Typography variant="subtitle2" color="mainTextColor.main">
+                Enter new patient information below
+              </Typography>
+            </Stack>
+
+            <Grid
+              container
+              rowSpacing={2}
+              columnSpacing={3}
+              flexDirection="row"
+            >
               <Grid item xs={6}>
                 <Controller
                   control={control}
@@ -458,6 +497,42 @@ const StoreModal = () => {
                 />
               </Grid>
             </Grid>
+
+            <Stack
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="center"
+              mt={3}
+              gap={1.5}
+            >
+              <Button
+                size="small"
+                variant="contained"
+                type="submit"
+                sx={{
+                  width: "120px",
+                  color: "white",
+                  textTransform: "none",
+                  ":hover": {
+                    bgcolor: "mainColor.main",
+                  },
+                }}
+              >
+                Save
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                color="warning"
+                onClick={onClose}
+                sx={{
+                  width: "120px",
+                  textTransform: "none",
+                }}
+              >
+                Cancel
+              </Button>
+            </Stack>
           </Box>
         </form>
       </Modal>

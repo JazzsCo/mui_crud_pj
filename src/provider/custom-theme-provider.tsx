@@ -9,6 +9,9 @@ const theme = createTheme({
     primary: {
       main: "#54bab9",
     },
+    warning: {
+      main: "#000000",
+    },
     mainColor: {
       main: "#54BAB9",
     },
