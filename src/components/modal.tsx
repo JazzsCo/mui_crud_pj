@@ -4,10 +4,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CloseIcon from "@mui/icons-material/Close";
 
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
 import { useModal } from "@/hooks/use-modal";
 import {
   FormControl,
@@ -20,6 +16,13 @@ import {
   Select,
   Stack,
   TextField,
+  Box,
+  Button,
+  Typography,
+  Modal,
+  FormLabel,
+  RadioGroup,
+  Radio,
 } from "@mui/material";
 import Image from "next/image";
 
@@ -47,7 +50,7 @@ const formSchema = z.object({
   birthday: z.string().transform((value) => new Date(value)),
   gender: z.string({
     errorMap: () => {
-      return { message: "You have to select a gender" };
+      return { message: "You need to select a gender" };
     },
   }),
 });
@@ -288,30 +291,31 @@ const StoreModal = () => {
                   control={control}
                   name="gender"
                   render={({ field }) => (
-                    <>
-                      <InputLabel error={!!errors.gender}>Gender</InputLabel>
-                      <TextField
-                        fullWidth
-                        type="text"
-                        variant="outlined"
-                        error={!!errors.gender}
-                        helperText={errors.gender?.message}
-                        {...field}
-                        sx={{
-                          ".MuiInputBase-input": {
-                            paddingY: "4px",
-                            borderColor: "yellow",
-                          },
-                          ".MuiFormHelperText-root": {
-                            fontSize: "11px",
-                            ml: "7px",
-                          },
-                          ".MuiOutlinedInput-notchedOutline": {
-                            borderColor: "mainColor.main",
-                          },
-                        }}
-                      />
-                    </>
+                    <FormControl
+                      sx={{
+                        width: "90%",
+                      }}
+                    >
+                      <FormLabel>Gender</FormLabel>
+                      <RadioGroup defaultValue="male">
+                        <Stack
+                          flexDirection="row"
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <FormControlLabel
+                            value="male"
+                            control={<Radio />}
+                            label="Male"
+                          />
+                          <FormControlLabel
+                            value="female"
+                            control={<Radio />}
+                            label="Female"
+                          />
+                        </Stack>
+                      </RadioGroup>
+                    </FormControl>
                   )}
                 />
               </Grid>
