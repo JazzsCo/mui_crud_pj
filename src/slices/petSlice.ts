@@ -10,6 +10,8 @@ interface Data {
   gender: string;
   birthday: string;
   phone: string;
+  township: string;
+  city: string;
   address: string;
 }
 

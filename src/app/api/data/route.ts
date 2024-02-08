@@ -4,7 +4,11 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const pets = await prisma.pet.findMany();
+    const pets = await prisma.pet.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
 
     return NextResponse.json(pets);
   } catch (error) {
@@ -136,33 +140,23 @@ export async function POST(req: NextRequest) {
 //   }
 // }
 
-// export async function DELETE(
-//   req: NextRequest,
-//   {
-//     params,
-//   }: {
-//     params: { storeId: string; billboardId: string };
-//   }
-// ) {
-//   try {
-//     const { getUser, isAuthenticated } = getKindeServerSession();
+export async function DELETE(req: NextRequest) {
+  try {
+    const { id } = await req.json();
 
-//     const user = await getUser();
+    if (!id) {
+      return new NextResponse("ID is required", { status: 400 });
+    }
 
-//     if (!(await isAuthenticated()) && !user) {
-//       return new NextResponse("Unauthenticated", { status: 401 });
-//     }
+    const pet = await prisma.pet.delete({
+      where: {
+        id,
+      },
+    });
 
-//     const billboard = await prisma.billboard.delete({
-//       where: {
-//         id: params.billboardId,
-//         storeId: params.storeId,
-//       },
-//     });
-
-//     return NextResponse.json(billboard);
-//   } catch (error) {
-//     console.log("[BILLBOARD_DELETE]", error);
-//     return new NextResponse("Internal server error", { status: 500 });
-//   }
-// }
+    return NextResponse.json(pet);
+  } catch (error) {
+    console.log("[PET_DELETE]", error);
+    return new NextResponse("Internal server error", { status: 500 });
+  }
+}

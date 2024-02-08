@@ -1,11 +1,14 @@
-import modalSlice from "@/slices/modalSlice";
 import petSlice from "@/slices/petSlice";
+import createModalSlice from "@/slices/createModalSlice";
+import deleteModalSlice from "@/slices/deleteModalSlice";
+
 import { configureStore } from "@reduxjs/toolkit";
 
 export const store = configureStore({
   reducer: {
     pet: petSlice,
-    modal: modalSlice,
+    createModal: createModalSlice,
+    deleteModal: deleteModalSlice,
   },
 });
 

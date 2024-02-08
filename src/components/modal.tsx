@@ -1,5 +1,7 @@
+"use client";
+
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CloseIcon from "@mui/icons-material/Close";
@@ -28,7 +30,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { getData } from "@/slices/petSlice";
-import { onClose } from "@/slices/modalSlice";
+import { deleteDefaultId, onClose } from "@/slices/createModalSlice";
 
 const STATUS = [
   {
@@ -96,11 +98,13 @@ const formSchema = z.object({
 
 const StoreModal = () => {
   const dispatch = useAppDispatch();
-  const { isOpen } = useAppSelector((state) => state.modal);
 
-  const closeModal = () => {
-    dispatch(onClose());
-  };
+  const {
+    createModal: { isOpen, defaultId },
+    pet: { data },
+  } = useAppSelector((state) => state);
+
+  const defaultData = data.find((item) => item.id === defaultId);
 
   const {
     handleSubmit,
@@ -110,23 +114,37 @@ const StoreModal = () => {
   } = useForm<z.infer<typeof formSchema>>({
     mode: "all",
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      pawrent: "",
-      status: "",
-      breed: "",
-      address: "",
-      city: "",
-      township: "",
-      phone: "",
-      birthday: "",
-      gender: "male",
-    },
+    defaultValues: defaultData
+      ? {
+          name: defaultData.name,
+          pawrent: defaultData.pawrent,
+          status: defaultData.status,
+          breed: defaultData.breed,
+          address: defaultData.address,
+          city: defaultData.city,
+          township: defaultData.township,
+          phone: defaultData.phone,
+          birthday: defaultData.birthday,
+          gender: defaultData.gender === "male" ? "male" : "female",
+        }
+      : {
+          name: "",
+          pawrent: "",
+          status: "",
+          breed: "",
+          address: "",
+          city: "",
+          township: "",
+          phone: "",
+          birthday: "",
+          gender: "male",
+        },
   });
 
   const closeAndReset = () => {
     reset();
-    closeModal();
+    dispatch(onClose());
+    dispatch(deleteDefaultId());
   };
 
   const onSubmit = async ({
@@ -207,7 +225,7 @@ const StoreModal = () => {
               Add new patient
             </Typography>
             <Typography variant="subtitle2" color="mainTextColor.main">
-              Enter new patient information below
+              Enter new patient information below {defaultData?.name}
             </Typography>
           </Stack>
 
@@ -571,21 +589,40 @@ const StoreModal = () => {
             mt={3}
             gap={1.5}
           >
-            <Button
-              size="small"
-              variant="contained"
-              type="submit"
-              sx={{
-                width: "120px",
-                color: "white",
-                textTransform: "none",
-                ":hover": {
-                  bgcolor: "mainColor.main",
-                },
-              }}
-            >
-              Save
-            </Button>
+            {defaultId ? (
+              <Button
+                size="small"
+                variant="contained"
+                type="submit"
+                sx={{
+                  width: "120px",
+                  color: "black",
+                  bgcolor: "updateBtnColor.main",
+                  textTransform: "none",
+                  ":hover": {
+                    bgcolor: "updateBtnColor.main",
+                  },
+                }}
+              >
+                Update
+              </Button>
+            ) : (
+              <Button
+                size="small"
+                variant="contained"
+                type="submit"
+                sx={{
+                  width: "120px",
+                  color: "white",
+                  textTransform: "none",
+                  ":hover": {
+                    bgcolor: "mainColor.main",
+                  },
+                }}
+              >
+                Save
+              </Button>
+            )}
             <Button
               size="small"
               variant="outlined"

@@ -9,7 +9,6 @@ import { Box } from "@mui/material";
 import DataTable from "@/components/data-table";
 import { Provider } from "react-redux";
 import { store } from "@/store";
-import ModalProvider from "@/provider/modal-provider";
 
 export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
@@ -24,7 +23,6 @@ export default function Home() {
 
   return (
     <Provider store={store}>
-      <ModalProvider />
       <Box
         height="100vh"
         sx={{
@@ -36,7 +34,7 @@ export default function Home() {
         <Box
           sx={{
             margin: 2,
-            height: "calc(100vh - 114px)",
+            height: "calc(100% - 114px)",
             // dvh, svh, lvh
             bgcolor: "secTextColor.main",
           }}

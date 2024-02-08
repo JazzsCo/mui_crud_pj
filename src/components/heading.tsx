@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch } from "@/hooks";
-import { onOpen } from "@/slices/modalSlice";
+import { onOpen } from "@/slices/createModalSlice";
 import {
   Box,
   Button,
