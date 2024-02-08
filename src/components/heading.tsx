@@ -1,6 +1,7 @@
 "use client";
 
-import { useModal } from "@/hooks/use-modal";
+import { useAppDispatch } from "@/hooks";
+import { onOpen } from "@/slices/modalSlice";
 import {
   Box,
   Button,
@@ -18,7 +19,11 @@ import {
 import Image from "next/image";
 
 const Heading = () => {
-  const { onOpen } = useModal();
+  const dispatch = useAppDispatch();
+
+  const openModal = () => {
+    dispatch(onOpen());
+  };
 
   return (
     <Box
@@ -124,7 +129,7 @@ const Heading = () => {
                   border: "none",
                 },
               }}
-              onClick={onOpen}
+              onClick={openModal}
             >
               <Stack direction="row" alignItems="center">
                 <IconButton disableRipple>

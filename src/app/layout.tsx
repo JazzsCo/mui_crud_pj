@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
 import CustomThemeProvider from "@/provider/custom-theme-provider";
-import ModalProvider from "@/provider/modal-provider";
 
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -22,10 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <CustomThemeProvider>
-          <ModalProvider />
-          {children}
-        </CustomThemeProvider>
+        <CustomThemeProvider>{children}</CustomThemeProvider>
       </body>
     </html>
   );
