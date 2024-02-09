@@ -37,7 +37,7 @@ export default function Home() {
         {/* <Box
           sx={{
             margin: 2,
-            height: "calc(100% - 114px)",
+            height: "calc(100vh - 114px)",
             // dvh, svh, lvh
             bgcolor: "secTextColor.main",
           }}

@@ -16,12 +16,41 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useAppDispatch } from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 
 import { onOpen } from "@/slices/createModalSlice";
+import { setBreed, setSearchValue, setStatus } from "@/slices/filterSlice";
+import { useState } from "react";
+
+const STATUS = [
+  {
+    name: "Food Allergy",
+    imgUrl: "/resources/allergy.png",
+  },
+  {
+    name: "Picky Eater",
+    imgUrl: "/resources/picky_eater.png",
+  },
+];
+
+const BREED = [
+  {
+    name: "Beagle",
+  },
+  {
+    name: "Spaniel",
+  },
+  {
+    name: "Golden Retriever",
+  },
+];
 
 const Heading = () => {
   const dispatch = useAppDispatch();
+
+  const {
+    filter: { searchValue, status, breed },
+  } = useAppSelector((state) => state);
 
   const openModal = () => {
     dispatch(onOpen());
@@ -59,6 +88,8 @@ const Heading = () => {
               fullWidth
               variant="outlined"
               placeholder="Search table"
+              value={searchValue}
+              onChange={(evt) => dispatch(setSearchValue(evt.target.value))}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -80,7 +111,9 @@ const Heading = () => {
               sx={{
                 ".MuiInputBase-root": {
                   borderRadius: 2.5,
-                  height: 28,
+                },
+                ".MuiInputBase-input": {
+                  paddingY: "4px",
                 },
               }}
             />
@@ -91,11 +124,30 @@ const Heading = () => {
               fullWidth
               variant="outlined"
               sx={{
-                ".MuiInputBase-root": { borderRadius: 2.5, height: 28 },
+                ".MuiInputBase-root": { borderRadius: 2.5 },
+                ".MuiInputBase-input": {
+                  paddingY: "4px",
+                },
+                ".MuiFormHelperText-root": {
+                  fontSize: "11px",
+                  ml: "7px",
+                },
+                ".MuiOutlinedInput-notchedOutline": {
+                  borderColor: "mainColor.main",
+                },
               }}
             >
-              <Select value={10} onChange={() => {}}>
-                <MenuItem value={10}>Status All</MenuItem>
+              <Select
+                value={status}
+                onChange={(evt) => dispatch(setStatus(evt.target.value))}
+                placeholder="please choose city"
+              >
+                {STATUS.map((item) => (
+                  <MenuItem key={item.name} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+                <MenuItem value="default_value">Status All</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -105,11 +157,30 @@ const Heading = () => {
               fullWidth
               variant="outlined"
               sx={{
-                ".MuiInputBase-root": { borderRadius: 2.5, height: 28 },
+                ".MuiInputBase-root": { borderRadius: 2.5 },
+                ".MuiInputBase-input": {
+                  paddingY: "4px",
+                },
+                ".MuiFormHelperText-root": {
+                  fontSize: "11px",
+                  ml: "7px",
+                },
+                ".MuiOutlinedInput-notchedOutline": {
+                  borderColor: "mainColor.main",
+                },
               }}
             >
-              <Select value={10} onChange={() => {}}>
-                <MenuItem value={10}>Breed All</MenuItem>
+              <Select
+                value={breed}
+                onChange={(evt) => dispatch(setBreed(evt.target.value))}
+                placeholder="please choose city"
+              >
+                {BREED.map((item) => (
+                  <MenuItem key={item.name} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+                <MenuItem value="default_value">Breed All</MenuItem>
               </Select>
             </FormControl>
           </Grid>

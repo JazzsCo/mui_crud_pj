@@ -13,7 +13,7 @@ const initialState: AlertSlice = {
 };
 
 export const alertSlice = createSlice({
-  name: "createModal",
+  name: "alert",
   initialState,
   reducers: {
     onOpenCreate: (state) => {
