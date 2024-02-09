@@ -1,4 +1,5 @@
 import petSlice from "@/slices/petSlice";
+import alertSlice from "@/slices/alertSlice";
 import createModalSlice from "@/slices/createModalSlice";
 import deleteModalSlice from "@/slices/deleteModalSlice";
 
@@ -9,6 +10,7 @@ export const store = configureStore({
     pet: petSlice,
     createModal: createModalSlice,
     deleteModal: deleteModalSlice,
+    alert: alertSlice,
   },
 });
 

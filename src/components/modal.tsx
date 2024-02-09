@@ -1,10 +1,9 @@
 "use client";
 
 import { z } from "zod";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import CloseIcon from "@mui/icons-material/Close";
+import axios from "axios";
+import { useEffect } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import {
   FormControl,
@@ -25,12 +24,15 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/material";
-import Image from "next/image";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+
+import CloseIcon from "@mui/icons-material/Close";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+
 import { getData } from "@/slices/petSlice";
 import { deleteDefaultId, onClose } from "@/slices/createModalSlice";
+import { onOpenCreate, onOpenUpdate } from "@/slices/alertSlice";
 
 const STATUS = [
   {
@@ -83,7 +85,9 @@ const formSchema = z.object({
     .min(3, { message: "Pawrent has to be at least 3 characters." }),
   status: z.string().nonempty({ message: "You need to select status." }),
   breed: z.string().nonempty({ message: "You need to select breed." }),
-  address: z.string().nonempty({ message: "You need to select address." }),
+  address: z
+    .string()
+    .min(5, { message: "Address has to be at least 5 characters" }),
   city: z.string().nonempty({ message: "You need to select city." }),
   township: z.string().nonempty({ message: "You need to select township." }),
   phone: z
@@ -93,18 +97,24 @@ const formSchema = z.object({
   birthday: z
     .string()
     .nonempty({ message: "Yon need to select a valid date." }),
-  gender: z.enum(["male", "female"]),
+  gender: z.string().nonempty({ message: "You need to select a gender" }),
 });
 
 const StoreModal = () => {
   const dispatch = useAppDispatch();
 
   const {
-    createModal: { isOpen, defaultId },
     pet: { data },
+    createModal: { isOpen, defaultId },
   } = useAppSelector((state) => state);
 
   const defaultData = data.find((item) => item.id === defaultId);
+
+  const closeAndReset = () => {
+    reset();
+    dispatch(onClose());
+    dispatch(deleteDefaultId());
+  };
 
   const {
     handleSubmit,
@@ -114,40 +124,9 @@ const StoreModal = () => {
   } = useForm<z.infer<typeof formSchema>>({
     mode: "all",
     resolver: zodResolver(formSchema),
-    defaultValues: defaultData
-      ? {
-          name: defaultData.name,
-          pawrent: defaultData.pawrent,
-          status: defaultData.status,
-          breed: defaultData.breed,
-          address: defaultData.address,
-          city: defaultData.city,
-          township: defaultData.township,
-          phone: defaultData.phone,
-          birthday: defaultData.birthday,
-          gender: defaultData.gender === "male" ? "male" : "female",
-        }
-      : {
-          name: "",
-          pawrent: "",
-          status: "",
-          breed: "",
-          address: "",
-          city: "",
-          township: "",
-          phone: "",
-          birthday: "",
-          gender: "male",
-        },
   });
 
-  const closeAndReset = () => {
-    reset();
-    dispatch(onClose());
-    dispatch(deleteDefaultId());
-  };
-
-  const onSubmit = async ({
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async ({
     name,
     pawrent,
     status,
@@ -158,29 +137,59 @@ const StoreModal = () => {
     phone,
     birthday,
     gender,
-  }: z.infer<typeof formSchema>) => {
+  }) => {
     try {
-      const res = await axios.post("/api/data", {
-        name,
-        pawrent,
-        status,
-        breed,
-        address,
-        city,
-        township,
-        phone,
-        birthday,
-        gender,
-      });
-
-      // TODO: SUCCESS MESSAGE
+      if (defaultData) {
+        const res = await axios.patch("/api/data", {
+          id: defaultData.id,
+          name,
+          pawrent,
+          status,
+          breed,
+          address,
+          city,
+          township,
+          phone,
+          birthday,
+          gender,
+        });
+      } else {
+        const res = await axios.post("/api/data", {
+          name,
+          pawrent,
+          status,
+          breed,
+          address,
+          city,
+          township,
+          phone,
+          birthday,
+          gender,
+        });
+      }
     } catch (error) {
       console.log("ERROR", error);
     } finally {
       dispatch(getData());
       closeAndReset();
+      defaultData ? dispatch(onOpenUpdate()) : dispatch(onOpenCreate());
     }
   };
+
+  useEffect(() => {
+    reset({
+      name: defaultData?.name,
+      pawrent: defaultData?.pawrent,
+      status: defaultData?.status,
+      breed: defaultData?.breed,
+      address: defaultData?.address,
+      city: defaultData?.city,
+      township: defaultData?.township,
+      phone: defaultData?.phone,
+      birthday: defaultData?.birthday,
+      gender: defaultData?.gender,
+    });
+  }, [reset, defaultData]);
 
   return (
     <Modal open={isOpen} onClose={closeAndReset}>
@@ -225,7 +234,7 @@ const StoreModal = () => {
               Add new patient
             </Typography>
             <Typography variant="subtitle2" color="mainTextColor.main">
-              Enter new patient information below {defaultData?.name}
+              Enter new patient information below
             </Typography>
           </Stack>
 
@@ -243,7 +252,8 @@ const StoreModal = () => {
                       variant="outlined"
                       error={!!errors.name}
                       helperText={errors.name?.message}
-                      {...field}
+                      value={field.value || ""}
+                      onChange={(evt) => field.onChange(evt.target.value)}
                       sx={{
                         ".MuiInputBase-input": {
                           paddingY: "4px",
@@ -286,7 +296,11 @@ const StoreModal = () => {
                         },
                       }}
                     >
-                      <Select {...field} placeholder="please choose status">
+                      <Select
+                        value={field.value || null}
+                        onChange={(evt) => field.onChange(evt.target.value)}
+                        placeholder="please choose status"
+                      >
                         {STATUS.map((item) => (
                           <MenuItem key={item.name} value={item.name}>
                             {item.name}
@@ -313,7 +327,8 @@ const StoreModal = () => {
                       variant="outlined"
                       error={!!errors.pawrent}
                       helperText={errors.pawrent?.message}
-                      {...field}
+                      value={field.value}
+                      onChange={(evt) => field.onChange(evt.target.value)}
                       sx={{
                         ".MuiInputBase-input": {
                           paddingY: "4px",
@@ -356,7 +371,11 @@ const StoreModal = () => {
                         },
                       }}
                     >
-                      <Select {...field} placeholder="please choose breed">
+                      <Select
+                        value={field.value || null}
+                        onChange={(evt) => field.onChange(evt.target.value)}
+                        placeholder="please choose breed"
+                      >
                         {BREED.map((item) => (
                           <MenuItem key={item.name} value={item.name}>
                             {item.name}
@@ -379,9 +398,13 @@ const StoreModal = () => {
                     sx={{
                       width: "90%",
                     }}
+                    error={!!errors.gender}
                   >
-                    <FormLabel>Gender</FormLabel>
-                    <RadioGroup {...field}>
+                    <FormLabel error={!!errors.gender}>Gender</FormLabel>
+                    <RadioGroup
+                      value={field.value}
+                      onChange={(evt) => field.onChange(evt.target.value)}
+                    >
                       <Stack
                         flexDirection="row"
                         alignItems="center"
@@ -399,6 +422,7 @@ const StoreModal = () => {
                         />
                       </Stack>
                     </RadioGroup>
+                    <FormHelperText>{errors.gender?.message}</FormHelperText>
                   </FormControl>
                 )}
               />
@@ -419,7 +443,8 @@ const StoreModal = () => {
                       variant="outlined"
                       error={!!errors.birthday}
                       helperText={errors.birthday?.message}
-                      {...field}
+                      value={field.value}
+                      onChange={(evt) => field.onChange(evt.target.value)}
                       sx={{
                         ".MuiInputBase-input": {
                           paddingY: "4px",
@@ -454,7 +479,8 @@ const StoreModal = () => {
                       variant="outlined"
                       error={!!errors.phone}
                       helperText={errors.phone?.message}
-                      {...field}
+                      value={field.value}
+                      onChange={(evt) => field.onChange(evt.target.value)}
                       sx={{
                         ".MuiInputBase-input": {
                           paddingY: "4px",
@@ -487,7 +513,8 @@ const StoreModal = () => {
                       variant="outlined"
                       error={!!errors.address}
                       helperText={errors.address?.message}
-                      {...field}
+                      value={field.value}
+                      onChange={(evt) => field.onChange(evt.target.value)}
                       sx={{
                         ".MuiFormHelperText-root": {
                           fontSize: "11px",
@@ -527,7 +554,11 @@ const StoreModal = () => {
                         },
                       }}
                     >
-                      <Select {...field} placeholder="please choose city">
+                      <Select
+                        value={field.value || null}
+                        onChange={(evt) => field.onChange(evt.target.value)}
+                        placeholder="please choose city"
+                      >
                         {CITY.map((item) => (
                           <MenuItem key={item.name} value={item.name}>
                             {item.name}
@@ -565,7 +596,11 @@ const StoreModal = () => {
                         },
                       }}
                     >
-                      <Select {...field} placeholder="please choose township">
+                      <Select
+                        value={field.value || null}
+                        onChange={(evt) => field.onChange(evt.target.value)}
+                        placeholder="please choose township"
+                      >
                         {TOWNSHIP.map((item) => (
                           <MenuItem key={item.name} value={item.name}>
                             {item.name}

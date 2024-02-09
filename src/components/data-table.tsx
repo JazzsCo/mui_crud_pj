@@ -1,31 +1,43 @@
 "use client";
 
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Checkbox from "@mui/material/Checkbox";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/hooks";
-import { getData } from "@/slices/petSlice";
+import Image from "next/image";
+import { useEffect } from "react";
+
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Checkbox,
+} from "@mui/material";
+import {
+  Alert,
   Box,
   Divider,
   IconButton,
   Menu,
   MenuItem,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
-
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+
+import ModalProvider from "@/provider/modal-provider";
+import DeleteModalProvider from "@/provider/delete-modal-provider";
+
+import { useAppDispatch, useAppSelector } from "@/hooks";
+
+import {
+  onCloseCreate,
+  onCloseDelete,
+  onCloseUpdate,
+} from "@/slices/alertSlice";
+import { getData } from "@/slices/petSlice";
 import { onOpen, setDefaultId } from "@/slices/createModalSlice";
 import { onDeleteOpen, setDeleteDefaultId } from "@/slices/deleteModalSlice";
-import DeleteModalProvider from "@/provider/delete-modal-provider";
-import ModalProvider from "@/provider/modal-provider";
 
 interface Heading {
   id: string;
@@ -73,7 +85,11 @@ const Headings: Heading[] = [
 
 const DataTable = () => {
   const dispatch = useAppDispatch();
-  const { data, isLoading, error } = useAppSelector((state) => state.pet);
+
+  const {
+    pet: { data, isLoading, error },
+    alert: { createOpen, updateOpen, deleteOpen },
+  } = useAppSelector((state) => state);
 
   const openCreateModal = (id: string) => {
     dispatch(onOpen());
@@ -83,6 +99,18 @@ const DataTable = () => {
   const openDeleteModal = (id: string) => {
     dispatch(onDeleteOpen());
     dispatch(setDeleteDefaultId(id));
+  };
+
+  const onCloseCreateAlert = () => {
+    dispatch(onCloseCreate());
+  };
+
+  const onCloseUpdateAlert = () => {
+    dispatch(onCloseUpdate());
+  };
+
+  const onCloseDeleteAlert = () => {
+    dispatch(onCloseDelete());
   };
 
   useEffect(() => {
@@ -270,6 +298,57 @@ const DataTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box
+        sx={{
+          width: "300px",
+        }}
+      >
+        <Snackbar
+          open={createOpen}
+          autoHideDuration={800}
+          onClose={onCloseCreateAlert}
+        >
+          <Alert
+            onClose={onCloseCreateAlert}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Patient is successfully created!
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={updateOpen}
+          autoHideDuration={800}
+          onClose={onCloseUpdateAlert}
+        >
+          <Alert
+            onClose={onCloseUpdateAlert}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Patient is successfully updated!
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={deleteOpen}
+          autoHideDuration={800}
+          onClose={onCloseDeleteAlert}
+        >
+          <Alert
+            onClose={onCloseDeleteAlert}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Patient is successfully deleted!
+          </Alert>
+        </Snackbar>
+      </Box>
     </Box>
   );
 };

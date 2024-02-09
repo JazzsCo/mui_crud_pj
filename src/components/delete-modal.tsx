@@ -1,5 +1,7 @@
 "use client";
 
+import axios from "axios";
+
 import {
   Box,
   Button,
@@ -10,13 +12,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
   deleteDeleteDefaultId,
   onDeleteClose,
 } from "@/slices/deleteModalSlice";
-import axios from "axios";
 import { getData } from "@/slices/petSlice";
+import { onOpenDelete } from "@/slices/alertSlice";
+
+import { useAppDispatch, useAppSelector } from "@/hooks";
 
 const DeleteModal = () => {
   const dispatch = useAppDispatch();
@@ -42,6 +45,7 @@ const DeleteModal = () => {
     } finally {
       dispatch(getData());
       closeAndReset();
+      dispatch(onOpenDelete());
     }
   };
 

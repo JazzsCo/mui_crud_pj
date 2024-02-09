@@ -1,8 +1,9 @@
 "use client";
 
-import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+
+import { Avatar, IconButton, Stack, Typography } from "@mui/material";
 
 const NavBar = () => {
   return (

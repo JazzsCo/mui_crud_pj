@@ -1,14 +1,15 @@
 "use client";
 
+import { Provider } from "react-redux";
 import { useEffect, useState } from "react";
 
-import Heading from "@/components/heading";
 import NavBar from "@/components/nav-bar";
+import Heading from "@/components/heading";
+import DataTable from "@/components/data-table";
+
+import { store } from "@/store";
 
 import { Box } from "@mui/material";
-import DataTable from "@/components/data-table";
-import { Provider } from "react-redux";
-import { store } from "@/store";
 
 export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
@@ -25,24 +26,26 @@ export default function Home() {
     <Provider store={store}>
       <Box
         height="100vh"
-        sx={{
-          bgcolor: "#f7e4b2",
-        }}
+        sx={
+          {
+            // bgcolor: "#f7e4b2",
+          }
+        }
       >
         <NavBar />
 
-        <Box
+        {/* <Box
           sx={{
             margin: 2,
             height: "calc(100% - 114px)",
             // dvh, svh, lvh
             bgcolor: "secTextColor.main",
           }}
-        >
-          <Heading />
+        > */}
+        <Heading />
 
-          <DataTable />
-        </Box>
+        <DataTable />
+        {/* </Box> */}
       </Box>
     </Provider>
   );

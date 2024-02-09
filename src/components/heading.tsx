@@ -1,7 +1,7 @@
 "use client";
 
-import { useAppDispatch } from "@/hooks";
-import { onOpen } from "@/slices/createModalSlice";
+import Image from "next/image";
+
 import {
   Box,
   Button,
@@ -9,14 +9,16 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
+
+import { useAppDispatch } from "@/hooks";
+
+import { onOpen } from "@/slices/createModalSlice";
 
 const Heading = () => {
   const dispatch = useAppDispatch();
