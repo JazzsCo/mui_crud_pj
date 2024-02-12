@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -11,6 +11,9 @@ import {
   TableHead,
   TableRow,
   Checkbox,
+  TablePagination,
+  TableFooter,
+  Skeleton,
 } from "@mui/material";
 import {
   Alert,
@@ -92,6 +95,13 @@ const DataTable = () => {
     alert: { createOpen, updateOpen, deleteOpen },
   } = useAppSelector((state) => state);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [isCheckedAll, setIsCheckedAll] = useState<boolean>(false);
+  const [checkedRows, setCheckedRows] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+
   const openCreateModal = (id: string) => {
     dispatch(onOpen());
     dispatch(setDefaultId(id));
@@ -133,6 +143,36 @@ const DataTable = () => {
       }
     });
 
+  const handleHeaderCheckboxClick = () => {
+    const newCheckedAll = !isCheckedAll;
+    setIsCheckedAll(newCheckedAll);
+    const newCheckedRows: { [key: string]: boolean } = {};
+    filterData.forEach((row) => {
+      newCheckedRows[row.id] = newCheckedAll;
+    });
+    setCheckedRows(newCheckedRows);
+  };
+
+  const handleRowCheckboxClick = (id: string) => {
+    const newCheckedRows = { ...checkedRows };
+    newCheckedRows[id] = !newCheckedRows[id];
+    setCheckedRows(newCheckedRows);
+    setIsCheckedAll(
+      Object.values(newCheckedRows).every((isChecked) => isChecked)
+    );
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   useEffect(() => {
     dispatch(getData());
   }, [dispatch]);
@@ -152,7 +192,11 @@ const DataTable = () => {
           >
             <TableRow>
               <TableCell variant="head" padding="checkbox">
-                <Checkbox color="primary" />
+                <Checkbox
+                  color="primary"
+                  checked={isCheckedAll}
+                  onChange={handleHeaderCheckboxClick}
+                />
               </TableCell>
 
               {Headings.map(({ id, label }) => (
@@ -175,14 +219,13 @@ const DataTable = () => {
             </TableRow>
           </TableHead>
 
-          <TableBody>
-            {filterData.length ? (
-              filterData.map((row) => (
+          {isLoading ? (
+            <TableBody>
+              {[1, 2, 3].map((i) => (
                 <TableRow
-                  hover
+                  key={i}
                   role="checkbox"
                   tabIndex={-1}
-                  key={row.id}
                   sx={{
                     cursor: "pointer",
                   }}
@@ -190,214 +233,261 @@ const DataTable = () => {
                   <TableCell padding="checkbox">
                     <Checkbox color="primary" />
                   </TableCell>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={100}
-                  >
-                    {row.breed.charAt(0)}
-                    {row.birthday.slice(7)}0{row.id.charAt(0)}
+                  <TableCell colSpan={10}>
+                    <Skeleton height={50} />
                   </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={130}
-                  >
-                    {row.name}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={90}
-                  >
-                    <IconButton disableRipple>
-                      <Image
-                        alt="Action-Image"
-                        src={
-                          row.status === "Food Allergy"
-                            ? "/resources/allergy.png"
-                            : "/resources/picky_eater.png"
-                        }
-                        priority
-                        width={20}
-                        height={20}
-                      />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={130}
-                  >
-                    {row.pawrent}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={120}
-                  >
-                    {row.breed}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={120}
-                  >
-                    {row.gender}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={140}
-                  >
-                    {row.birthday.split("-").reverse().join("-")}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    variant="head"
-                    padding="normal"
-                    width={200}
-                  >
-                    {row.phone}
-                  </TableCell>
-                  <TableCell align="left" variant="head" padding="normal">
-                    {row.address}, {row.township}, {row.city}
-                  </TableCell>
-                  <TableCell align="left" variant="head" padding="normal">
-                    <PopupState variant="popover">
-                      {(popupState) => (
-                        <Box>
-                          <IconButton {...bindTrigger(popupState)}>
-                            <Image
-                              alt="Action-Image"
-                              src="/resources/more.png"
-                              priority
-                              width={20}
-                              height={20}
-                            />
-                          </IconButton>
-
-                          <Menu {...bindMenu(popupState)}>
-                            <MenuItem
-                              sx={{
-                                width: 140,
-                              }}
-                              onClick={() => {
-                                openCreateModal(row.id);
-                                popupState.close();
-                              }}
-                            >
-                              <Stack
-                                direction="row"
-                                alignItems="center"
-                                justifyContent="flex-start"
-                                spacing={2}
-                              >
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              {filterData.length ? (
+                filterData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.id}
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={checkedRows[row.id] || false}
+                          onChange={() => handleRowCheckboxClick(row.id)}
+                        />
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={100}
+                      >
+                        {row.breed.charAt(0)}
+                        {row.birthday.slice(7)}0{row.id.charAt(0)}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={130}
+                      >
+                        {row.name}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={90}
+                      >
+                        <IconButton disableRipple>
+                          <Image
+                            alt="Action-Image"
+                            src={
+                              row.status === "Food Allergy"
+                                ? "/resources/allergy.png"
+                                : "/resources/picky_eater.png"
+                            }
+                            priority
+                            width={20}
+                            height={20}
+                          />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={130}
+                      >
+                        {row.pawrent}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={120}
+                      >
+                        {row.breed}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={120}
+                      >
+                        {row.gender}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={140}
+                      >
+                        {row.birthday.split("-").reverse().join("-")}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        variant="head"
+                        padding="normal"
+                        width={200}
+                      >
+                        {row.phone}
+                      </TableCell>
+                      <TableCell align="left" variant="head" padding="normal">
+                        {row.address}, {row.township}, {row.city}
+                      </TableCell>
+                      <TableCell align="left" variant="head" padding="normal">
+                        <PopupState variant="popover">
+                          {(popupState) => (
+                            <Box>
+                              <IconButton {...bindTrigger(popupState)}>
                                 <Image
-                                  alt="Edit-Image"
-                                  src="/resources/edit.png"
+                                  alt="Action-Image"
+                                  src="/resources/more.png"
                                   priority
                                   width={20}
                                   height={20}
                                 />
+                              </IconButton>
 
-                                <Typography
-                                  variant="body1"
+                              <Menu {...bindMenu(popupState)}>
+                                <MenuItem
                                   sx={{
-                                    color: "mainTextColor.main",
+                                    width: 140,
+                                  }}
+                                  onClick={() => {
+                                    openCreateModal(row.id);
+                                    popupState.close();
                                   }}
                                 >
-                                  Edit
-                                </Typography>
-                              </Stack>
-                            </MenuItem>
+                                  <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    justifyContent="flex-start"
+                                    spacing={2}
+                                  >
+                                    <Image
+                                      alt="Edit-Image"
+                                      src="/resources/edit.png"
+                                      priority
+                                      width={20}
+                                      height={20}
+                                    />
 
-                            <Divider />
+                                    <Typography
+                                      variant="body1"
+                                      sx={{
+                                        color: "mainTextColor.main",
+                                      }}
+                                    >
+                                      Edit
+                                    </Typography>
+                                  </Stack>
+                                </MenuItem>
 
-                            <MenuItem
-                              sx={{
-                                width: 140,
-                              }}
-                              onClick={() => {
-                                openDeleteModal(row.id);
-                                popupState.close();
-                              }}
-                            >
-                              <Stack
-                                direction="row"
-                                alignItems="center"
-                                justifyContent="flex-start"
-                                spacing={2}
-                              >
-                                <Box>
-                                  <Image
-                                    alt="Edit-Image"
-                                    src="/resources/delete.png"
-                                    priority
-                                    width={20}
-                                    height={20}
-                                  />
-                                </Box>
+                                <Divider />
 
-                                <Typography
-                                  variant="body1"
+                                <MenuItem
                                   sx={{
-                                    color: "mainTextColor.main",
+                                    width: 140,
+                                  }}
+                                  onClick={() => {
+                                    openDeleteModal(row.id);
+                                    popupState.close();
                                   }}
                                 >
-                                  Delete
-                                </Typography>
-                              </Stack>
-                            </MenuItem>
-                          </Menu>
-                        </Box>
-                      )}
-                    </PopupState>
+                                  <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    justifyContent="flex-start"
+                                    spacing={2}
+                                  >
+                                    <Box>
+                                      <Image
+                                        alt="Edit-Image"
+                                        src="/resources/delete.png"
+                                        priority
+                                        width={20}
+                                        height={20}
+                                      />
+                                    </Box>
+
+                                    <Typography
+                                      variant="body1"
+                                      sx={{
+                                        color: "mainTextColor.main",
+                                      }}
+                                    >
+                                      Delete
+                                    </Typography>
+                                  </Stack>
+                                </MenuItem>
+                              </Menu>
+                            </Box>
+                          )}
+                        </PopupState>
+                      </TableCell>
+                    </TableRow>
+                  ))
+              ) : (
+                <TableRow
+                  style={{
+                    height: 100,
+                  }}
+                >
+                  <TableCell colSpan={11}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        letterSpacing={1}
+                        fontWeight={600}
+                        color="mainColor.main"
+                      >
+                        Result Not Found!
+                      </Typography>
+                    </Stack>
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow
-                style={{
-                  height: 100,
-                }}
-              >
-                <TableCell colSpan={11}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Typography
-                      variant="subtitle1"
-                      letterSpacing={1}
-                      fontWeight={600}
-                      color="mainColor.main"
-                    >
-                      Result Not Found!
-                    </Typography>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          )}
+
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={11}>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={filterData.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  sx={{
+                    ".MuiSelect-select.MuiTablePagination-select": {
+                      borderRadius: 2.5,
+                      border: 1,
+                    },
+                  }}
+                />
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
 
-      <Box
-        sx={{
-          width: "300px",
-        }}
-      >
+      <Box>
         <Snackbar
           open={createOpen}
           autoHideDuration={900}

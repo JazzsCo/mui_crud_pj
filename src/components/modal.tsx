@@ -628,6 +628,7 @@ const StoreModal = () => {
               <Button
                 size="small"
                 variant="contained"
+                disabled={isLoading}
                 type="submit"
                 sx={{
                   width: "120px",
@@ -645,6 +646,7 @@ const StoreModal = () => {
               <Button
                 size="small"
                 variant="contained"
+                disabled={isLoading}
                 type="submit"
                 sx={{
                   width: "120px",

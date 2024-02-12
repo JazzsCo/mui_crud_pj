@@ -20,7 +20,6 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 
 import { onOpen } from "@/slices/createModalSlice";
 import { setBreed, setSearchValue, setStatus } from "@/slices/filterSlice";
-import { useState } from "react";
 
 const STATUS = [
   {
@@ -231,7 +230,7 @@ const Heading = () => {
             </Button>
           </Grid>
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Stack
               direction="row"
               alignItems="center"
@@ -259,7 +258,7 @@ const Heading = () => {
                 </Select>
               </FormControl>
             </Stack>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Stack>
     </Box>
