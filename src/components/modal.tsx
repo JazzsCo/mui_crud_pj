@@ -29,54 +29,11 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { BREED, CITY, STATUS, TOWNSHIP } from "@/constant";
 
 import { getData } from "@/slices/petSlice";
 import { deleteDefaultId, onClose } from "@/slices/createModalSlice";
 import { onOpenCreate, onOpenUpdate } from "@/slices/alertSlice";
-
-const STATUS = [
-  {
-    name: "Food Allergy",
-    imgUrl: "/resources/allergy.png",
-  },
-  {
-    name: "Picky Eater",
-    imgUrl: "/resources/picky_eater.png",
-  },
-];
-
-const BREED = [
-  {
-    name: "Beagle",
-  },
-  {
-    name: "Spaniel",
-  },
-  {
-    name: "Golden Retriever",
-  },
-];
-
-const CITY = [
-  {
-    name: "Yangon",
-  },
-];
-
-const TOWNSHIP = [
-  {
-    name: "Hlaing",
-  },
-  {
-    name: "Sanchaung",
-  },
-  {
-    name: "Mayangone",
-  },
-  {
-    name: "Kamayut",
-  },
-];
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name has to be at least 3 characters." }),

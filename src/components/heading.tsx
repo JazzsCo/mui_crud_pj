@@ -16,33 +16,11 @@ import {
   Typography,
 } from "@mui/material";
 
+import { BREED, STATUS } from "@/constant";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 
 import { onOpen } from "@/slices/createModalSlice";
 import { setBreed, setSearchValue, setStatus } from "@/slices/filterSlice";
-
-const STATUS = [
-  {
-    name: "Food Allergy",
-    imgUrl: "/resources/allergy.png",
-  },
-  {
-    name: "Picky Eater",
-    imgUrl: "/resources/picky_eater.png",
-  },
-];
-
-const BREED = [
-  {
-    name: "Beagle",
-  },
-  {
-    name: "Spaniel",
-  },
-  {
-    name: "Golden Retriever",
-  },
-];
 
 const Heading = () => {
   const dispatch = useAppDispatch();
