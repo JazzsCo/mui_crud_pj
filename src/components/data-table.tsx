@@ -154,12 +154,8 @@ const DataTable = () => {
   };
 
   const handleRowCheckboxClick = (id: string) => {
-    const newCheckedRows = { ...checkedRows };
-    newCheckedRows[id] = !newCheckedRows[id];
+    const newCheckedRows = { ...checkedRows, [id]: !checkedRows[id] };
     setCheckedRows(newCheckedRows);
-    setIsCheckedAll(
-      Object.values(newCheckedRows).every((isChecked) => isChecked)
-    );
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -176,6 +172,12 @@ const DataTable = () => {
   useEffect(() => {
     dispatch(getData());
   }, [dispatch]);
+
+  useEffect(() => {
+    const allChecked =
+      filterData.length > 0 && filterData.every((row) => checkedRows[row.id]);
+    setIsCheckedAll(allChecked);
+  }, [checkedRows, filterData]);
 
   return (
     <Box>
