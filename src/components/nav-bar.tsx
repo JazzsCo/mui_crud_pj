@@ -17,17 +17,17 @@ const NavBar = () => {
         bgcolor: "mainColor.main",
       }}
     >
-      <Link href="/">
-        <Image
-          alt="Logo-Image"
-          src="/resources/logo(2).png"
-          width={45}
-          height={60}
-          style={{
-            objectFit: "contain",
-          }}
-        />
-      </Link>
+      {/* <Link href="/"> */}
+      <Image
+        alt="Logo-Image"
+        src="/resources/logo(2).png"
+        width={45}
+        height={60}
+        style={{
+          objectFit: "contain",
+        }}
+      />
+      {/* </Link> */}
 
       <Stack direction="row" gap={3}>
         <IconButton>
