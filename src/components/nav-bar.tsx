@@ -21,7 +21,6 @@ const NavBar = () => {
         <Image
           alt="Logo-Image"
           src="/resources/logo(2).png"
-          priority
           width={45}
           height={60}
           style={{
