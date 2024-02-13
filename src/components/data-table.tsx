@@ -185,7 +185,7 @@ const DataTable = () => {
       <DeleteModalProvider />
 
       <TableContainer>
-        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+        <Table sx={{ minWidth: 750, mb: 10 }}>
           <TableHead
             sx={{
               borderTop: 1,
@@ -236,7 +236,7 @@ const DataTable = () => {
                     <Checkbox color="primary" />
                   </TableCell>
                   <TableCell colSpan={10}>
-                    <Skeleton height={50} />
+                    <Skeleton height={40} />
                   </TableCell>
                 </TableRow>
               ))}
