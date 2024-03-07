@@ -25,27 +25,25 @@ export default function Home() {
   return (
     <Provider store={store}>
       <Box
-        height="100vh"
-        sx={
-          {
-            // bgcolor: "#f7e4b2",
-          }
-        }
+        height="100dvh"
+        sx={{
+          bgcolor: "#f7e4b2",
+        }}
       >
         <NavBar />
 
-        {/* <Box
+        <Box
           sx={{
             margin: 2,
-            height: "calc(100vh - 114px)",
+            height: "calc(100dvh - 114px)",
             // dvh, svh, lvh
             bgcolor: "secTextColor.main",
           }}
-        > */}
-        <Heading />
+        >
+          <Heading />
 
-        <DataTable />
-        {/* </Box> */}
+          <DataTable />
+        </Box>
       </Box>
     </Provider>
   );

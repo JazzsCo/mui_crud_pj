@@ -14,6 +14,7 @@ import {
   TablePagination,
   TableFooter,
   Skeleton,
+  Paper,
 } from "@mui/material";
 import {
   Alert,
@@ -184,14 +185,11 @@ const DataTable = () => {
       <ModalProvider />
       <DeleteModalProvider />
 
-      <TableContainer>
-        <Table sx={{ minWidth: 750, mb: 10 }}>
-          <TableHead
-            sx={{
-              borderTop: 1,
-              borderColor: "#AAA0A0",
-            }}
-          >
+      <TableContainer
+        sx={{ maxHeight: "50dvh", borderTop: 0.5, borderColor: "#dbd6d6" }}
+      >
+        <Table stickyHeader aria-label="sticky table" sx={{ minWidth: 750 }}>
+          <TableHead>
             <TableRow>
               <TableCell variant="head" padding="checkbox">
                 <Checkbox
@@ -263,31 +261,14 @@ const DataTable = () => {
                           onChange={() => handleRowCheckboxClick(row.id)}
                         />
                       </TableCell>
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={100}
-                      >
+                      <TableCell align="left" padding="normal" width={100}>
                         {row.breed.charAt(0)}
                         {row.birthday.slice(7)}0{row.id.charAt(0)}
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={130}
-                      >
+                      <TableCell align="left" padding="normal" width={130}>
                         {row.name}
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={90}
-                      >
+                      <TableCell align="left" padding="normal" width={90}>
                         <IconButton disableRipple>
                           <Image
                             alt="Action-Image"
@@ -302,50 +283,25 @@ const DataTable = () => {
                           />
                         </IconButton>
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={130}
-                      >
+                      <TableCell align="left" padding="normal" width={130}>
                         {row.pawrent}
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={120}
-                      >
+                      <TableCell align="left" padding="normal" width={120}>
                         {row.breed}
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={120}
-                      >
+                      <TableCell align="left" padding="normal" width={120}>
                         {row.gender}
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={140}
-                      >
+                      <TableCell align="left" padding="normal" width={140}>
                         {row.birthday.split("-").reverse().join("-")}
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        variant="head"
-                        padding="normal"
-                        width={200}
-                      >
+                      <TableCell align="left" padding="normal" width={200}>
                         {row.phone}
                       </TableCell>
-                      <TableCell align="left" variant="head" padding="normal">
+                      <TableCell align="left" padding="normal">
                         {row.address}, {row.township}, {row.city}
                       </TableCell>
-                      <TableCell align="left" variant="head" padding="normal">
+                      <TableCell align="left" padding="normal">
                         <PopupState variant="popover">
                           {(popupState) => (
                             <Box>
@@ -464,30 +420,26 @@ const DataTable = () => {
               )}
             </TableBody>
           )}
-
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={11}>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={filterData.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  sx={{
-                    ".MuiSelect-select.MuiTablePagination-select": {
-                      borderRadius: 2.5,
-                      border: 1,
-                    },
-                  }}
-                />
-              </TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
       </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filterData.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{
+          mr: 3,
+          mt: 3,
+          ".MuiSelect-select.MuiTablePagination-select": {
+            borderRadius: 2.5,
+            border: 1,
+          },
+        }}
+      />
 
       <Box>
         <Snackbar
